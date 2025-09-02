@@ -91,23 +91,11 @@ def cholesky_solve(A, b):
     """
     n = len(A)
 
-    # Check if A is symmetric
+    # Step 0: Check if A is symmetric
     if check_sym(A) == False:
         print('Error')
         print('\nMatrix is not Symmteric ')
         return None
-
-    # Step 0: check if any diagonal element of A is zero. If yes then swap the rows.
-    for i in range(n):
-        if A[i][i] == 0:
-            # Find a row with non-zero element in column i
-            for k in range(i+1, n):
-                if A[k][i] != 0:
-                    # Swap rows in matrix A
-                    A[i], A[k] = A[k], A[i]
-                    # Swap corresponding elements in vector b
-                    b[i], b[k] = b[k], b[i]
-                    break
     
     # Step 1: Initialize L matrix
     L = []
@@ -147,15 +135,15 @@ def cholesky_solve(A, b):
             sum_val += L[j][i] * x[j]  # L^T[i][j] = L[j][i]
         x[i] = (y[i] - sum_val) / L[i][i]
     
-    return x, L 
+    return x
 
-def gauss_seidel(A, b, x0, max_iter=50, tol=1e-6):
+def gauss_seidel(A, b, x0=None, max_iter=50, tol=1e-6):
     """
     Gauss-Seidel Method for solving Ax = b
     """
     n = len(b)
 
-    # Step 0: check if any diagonal element of A is zero. If yes then swap the rows.
+    # Check if any diagonal element of A is zero. If yes then swap the rows.
     for i in range(n):
         if A[i][i] == 0:
             # Find a row with non-zero element in column i
@@ -167,7 +155,11 @@ def gauss_seidel(A, b, x0, max_iter=50, tol=1e-6):
                     b[i], b[k] = b[k], b[i]
                     break
 
-    x = x0[:]  # Copy initial guess
+    # Step 0: Initialize guess vector x
+    if x0 is None:
+        x0 = [0.0] * n  # start with zeros
+
+    x = x0[:]  # make a copy
     
     for iteration in range(max_iter):
         x_old = x[:]  # X(K)
@@ -193,6 +185,3 @@ def gauss_seidel(A, b, x0, max_iter=50, tol=1e-6):
         if converged:
             print(f"Converged in {iteration + 1} iterations")
             return x
-
-    
-
